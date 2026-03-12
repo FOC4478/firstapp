@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1095022035275",
+    "project_id": "okekem-flutter-app",
+    "storage_bucket": "okekem-flutter-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095022035275:android:0bbee047c9eb1294f828ce",
+        "android_client_info": {
+          "package_name": "com.example.my_first_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvAyFcYj4mTLtL9JNwEynBRSFPZ4mRfMI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

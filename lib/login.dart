@@ -29,37 +29,38 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login Page')),
+       appBar: AppBar(title: const Text('Login'),),
       body: Column(
         children: [
           TextField(
             controller: _email,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              hintText: "Enter Your Email",
-            ),
+            decoration: const InputDecoration(hintText: "Enter Your Email"),
           ),
           TextField(
             controller: _password,
             obscureText: true,
-            decoration: const InputDecoration(
-              hintText: "Enter Your Password",
-            ),
+            decoration: const InputDecoration(hintText: "Enter Your Password"),
           ),
           TextButton(
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
-
+      
               final userCredential = await FirebaseAuth.instance
-                  .createUserWithEmailAndPassword(
-                email: email,
-                password: password,
-              );
-
+                  .signInWithEmailAndPassword(email: email, password: password);
+      
               print(userCredential);
             },
             child: const Text('Login'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil('/register/', (route) => false);
+            },
+            child: const Text('Not Registered yet? Register here!'),
           ),
         ],
       ),

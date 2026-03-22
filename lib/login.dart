@@ -1,5 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as devtools;
+
+import 'package:my_first_app/routes.dart';
+import 'package:my_first_app/utilities.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -29,7 +33,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: AppBar(title: const Text('Login'),),
+      appBar: AppBar(title: const Text('Login')),
       body: Column(
         children: [
           TextField(
@@ -46,23 +50,49 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
-      
-              final userCredential = await FirebaseAuth.instance
-                  .signInWithEmailAndPassword(email: email, password: password);
-                if (userCredential.user != null) {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-              '/notes/',
-             (route) => false,
-               );
-               }
-      },
+
+              try {
+                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  email: email,
+                  password: password,
+                );
+
+                if (!mounted) return;
+
+                Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(noteRoute, (route) => false);
+              }  on FirebaseAuthException catch (e) {
+                  if (!mounted) return;
+
+                  String message;
+
+                 switch (e.code) {
+                  case 'user-not-found':
+                    message = 'User not found';
+                   break;
+                 case 'wrong-password':
+                 message = 'Wrong password';
+                  break;
+                 case 'invalid-email':
+                 message = 'Invalid email entered';
+                    break;
+                  default:
+                 message = e.message ?? 'Authentication error';
+                  }
+
+               devtools.log('Error: ${e.code}');
+
+             await showErrorDialog(context, message);
+            }
+            },
             child: const Text('Login'),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(
                 context,
-              ).pushNamedAndRemoveUntil('/register/', (route) => false);
+              ).pushNamedAndRemoveUntil(registerRoute, (route) => false);
             },
             child: const Text('Not Registered yet? Register here!'),
           ),

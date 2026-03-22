@@ -57,34 +57,43 @@ class _LoginViewState extends State<LoginView> {
                   password: password,
                 );
 
-                if (!mounted) return;
-
-                Navigator.of(
+                final user = FirebaseAuth.instance.currentUser;
+                if (user?.emailVerified ?? false) {
+                  // user is verified
+                  Navigator.of(
                   context,
                 ).pushNamedAndRemoveUntil(noteRoute, (route) => false);
-              }  on FirebaseAuthException catch (e) {
-                  if (!mounted) return;
+                } else {
+                  // user is not verified
+                  Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(verifyEmailRoute, (route) => false);
+                }
 
-                  String message;
+                if (!mounted) return;
+              } on FirebaseAuthException catch (e) {
+                if (!mounted) return;
 
-                 switch (e.code) {
+                String message;
+
+                switch (e.code) {
                   case 'user-not-found':
                     message = 'User not found';
-                   break;
-                 case 'wrong-password':
-                 message = 'Wrong password';
-                  break;
-                 case 'invalid-email':
-                 message = 'Invalid email entered';
+                    break;
+                  case 'wrong-password':
+                    message = 'Wrong password';
+                    break;
+                  case 'invalid-email':
+                    message = 'Invalid email entered';
                     break;
                   default:
-                 message = e.message ?? 'Authentication error';
-                  }
+                    message = e.message ?? 'Authentication error';
+                }
 
-               devtools.log('Error: ${e.code}');
+                devtools.log('Error: ${e.code}');
 
-             await showErrorDialog(context, message);
-            }
+                await showErrorDialog(context, message);
+              }
             },
             child: const Text('Login'),
           ),

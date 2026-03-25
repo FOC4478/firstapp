@@ -83,9 +83,7 @@ class _LoginViewState extends State<LoginView> {
                   case 'wrong-password':
                     message = 'Wrong password';
                     break;
-                  case 'invalid-email':
-                    message = 'Invalid email entered';
-                    break;
+                  
                   default:
                     message = e.message ?? 'Authentication error';
                 }

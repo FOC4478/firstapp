@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/enums/menuaction.dart';
+import 'package:my_first_app/notes/listview.dart';
 import 'package:my_first_app/routes.dart';
 import 'package:my_first_app/services/auth/authservice.dart';
 import 'package:my_first_app/services/crud/note_service.dart';
+import 'package:my_first_app/utilities/logouterrordialogue.dart';
 
 class NoteView extends StatefulWidget {
   const NoteView({super.key});
@@ -23,12 +25,6 @@ class _NoteViewState extends State<NoteView> {
   }
 
   @override
-  void dispose() {
-    _notesService.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +40,7 @@ class _NoteViewState extends State<NoteView> {
             onSelected: (value) async {
               switch (value) {
                 case MenuAction.logout:
-                  final shouldLogout = await showLogOutDialog(context);
+                  final shouldLogout = await showLogOutDialogue(context);
                   if (shouldLogout) {
                     await AuthService.firebase().logOut();
                     Navigator.of(
@@ -75,7 +71,17 @@ class _NoteViewState extends State<NoteView> {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.active:
-                      return const Text('Waiting For All Notes');
+                      if (snapshot.hasData) {
+                        final allNotes = snapshot.data as List<DatabaseNote>;
+                        return NotesListView(
+                          notes: allNotes,
+                          onDeleteNote: (note) async {
+                            await _notesService.deleteNote(id: note.id);
+                          },
+                        );
+                      } else {
+                        return const CircularProgressIndicator();
+                      }
                     default:
                       return const CircularProgressIndicator();
                   }
@@ -88,30 +94,4 @@ class _NoteViewState extends State<NoteView> {
       ),
     );
   }
-}
-
-Future<bool> showLogOutDialog(BuildContext context) {
-  return showDialog<bool>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: const Text('Log Out'),
-          ),
-        ],
-      );
-    },
-  ).then((value) => value ?? false);
 }

@@ -1,41 +1,61 @@
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:my_first_app/services/auth/auth.dart';
 
 @immutable
 abstract class AuthState {
-  const AuthState();
+  final bool isLoading;
+  final String? loadingText;
+
+  const AuthState({
+    required this.isLoading,
+    this.loadingText = 'Please wait a moment',
+  });
 }
 
+// INITIAL
 class AuthStateUninitialize extends AuthState {
-  const AuthStateUninitialize();
+  const AuthStateUninitialize() : super(isLoading: true);
 }
 
+// REGISTERING
 class AuthStateRegistering extends AuthState {
   final Exception? exception;
-  const AuthStateRegistering({this.exception});
+
+  const AuthStateRegistering({
+    this.exception,
+  }) : super(isLoading: false);
 }
 
+// LOGGED IN
 class AuthStateLoggedIn extends AuthState {
   final AuthUser user;
 
-  const AuthStateLoggedIn(this.user);
+  const AuthStateLoggedIn(this.user)
+      : super(isLoading: false);
 }
 
-// class AuthStateLoginFailure extends AuthState {
-//   final Exception exception;
-//   const AuthStateLoginFailure(this.exception);
-// }
-
+// NEED VERIFICATION
 class AuthStateNeedVerification extends AuthState {
-  const AuthStateNeedVerification();
+  const AuthStateNeedVerification()
+      : super(isLoading: false);
 }
 
+// LOGGED OUT
 class AuthStateLoggedOut extends AuthState with EquatableMixin {
   final Exception? exception;
-  final bool isLoading;
-  const AuthStateLoggedOut({required this.exception, required this.isLoading});
-  
+
+  const AuthStateLoggedOut({
+    required this.exception,
+    required bool isLoading,
+    String? loadingText,
+  }) : super(
+          isLoading: isLoading,
+          loadingText: loadingText,
+        );
+
   @override
   List<Object?> get props => [exception, isLoading];
 }
+

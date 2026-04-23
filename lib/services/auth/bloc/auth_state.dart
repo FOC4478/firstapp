@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:my_first_app/services/auth/auth.dart';
@@ -23,23 +22,33 @@ class AuthStateUninitialize extends AuthState {
 class AuthStateRegistering extends AuthState {
   final Exception? exception;
 
-  const AuthStateRegistering({
-    this.exception,
-  }) : super(isLoading: false);
+  const AuthStateRegistering({this.exception, required bool isLoading}) : super(isLoading: false);
+}
+
+//forgot password
+class AuthStateForgotPassword extends AuthState {
+  final Exception? exception;
+  final bool hasSentEmail;
+
+ const  AuthStateForgotPassword({
+  required super.isLoading,
+   super.loadingText,
+    required this.exception, 
+    required this.hasSentEmail,
+    });
+  
 }
 
 // LOGGED IN
 class AuthStateLoggedIn extends AuthState {
   final AuthUser user;
 
-  const AuthStateLoggedIn(this.user)
-      : super(isLoading: false);
+  const AuthStateLoggedIn(this.user) : super(isLoading: false);
 }
 
 // NEED VERIFICATION
 class AuthStateNeedVerification extends AuthState {
-  const AuthStateNeedVerification()
-      : super(isLoading: false);
+  const AuthStateNeedVerification() : super(isLoading: false);
 }
 
 // LOGGED OUT
@@ -50,12 +59,8 @@ class AuthStateLoggedOut extends AuthState with EquatableMixin {
     required this.exception,
     required bool isLoading,
     String? loadingText,
-  }) : super(
-          isLoading: isLoading,
-          loadingText: loadingText,
-        );
+  }) : super(isLoading: isLoading, loadingText: loadingText);
 
   @override
   List<Object?> get props => [exception, isLoading];
 }
-
